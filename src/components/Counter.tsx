@@ -1,23 +1,17 @@
 import React from "react";
-import {Button} from "./Button";
 
-type CounterPropsType = {
+type CounterProps = {
     count: number;
     increment: () => void;
     reset: () => void;
 }
 
-export const Counter = (props: CounterPropsType) => {
+export const Counter = (props: CounterProps) => {
     return (
         <div>
-            <div>
-                {props.count}
-            </div>
-            <div>
-                <Button onClick={props.increment}  title = {"inc"}/>
-                <Button onClick={props.reset}  title = {"reset"}/>
-            </div>
+            <div> {props.count} </div>
+            <button onClick={props.increment}>inc</button>
+            <button onClick={props.reset}>reset</button>
         </div>
     )
 }
-
