@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Counter} from "./components/Counter";
 import {Settings} from "./components/Settings";
@@ -9,6 +9,22 @@ function App() {
     const [maxValue, setMaxValue] = useState<string>('5');
     const [startValue, setStartValue] = useState<string>('0');
     const [disabled, setDisabled] = useState<boolean>(true);
+
+
+
+    useEffect(() => {
+        let newMax = localStorage.getItem("maxValue")
+        if (newMax){
+            setMaxValue(newMax)
+        }
+        let newStart = localStorage.getItem("startValue")
+        if (newStart){
+            setStartValue(newStart)
+        }
+    }, []);
+
+
+
 
     function increment() {
         if (parseInt(count) < parseInt(maxValue)) {
@@ -24,6 +40,7 @@ function App() {
     function setCounter() {
         setCount(startValue);
         setDisabled(true)
+
     }
 
     function startValueChange(newStartValue: string) {
@@ -63,6 +80,7 @@ function App() {
                      increment={increment}
                      reset={reset}
                      disabled={disabled}
+                     maxValue={maxValue}
             />
         </div>
     );
