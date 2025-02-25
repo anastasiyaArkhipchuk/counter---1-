@@ -1,46 +1,48 @@
-import React, {ChangeEvent, useState} from "react";
+import React, { ChangeEvent } from "react";
+import { Button } from "./Button";
 
 type SettingsPropsType = {
-    startValueChange: (newStartValue: string) => void;
-    maxValueChange: (newMaxValue: string) => void;
-    startValue: string;
-    maxValue: string;
-    setCounter: () => void;
+    handleStartValueChange: (newStartValue: number) => void;
+    handleMaxValueChange: (newMaxValue: number) => void;
+    applySettings: (maxValue: number, startValue: number) => void;
     disabled: boolean;
-}
+    maxLimit: number;
+    startLimit: number;
+};
 
-export const Settings = (props: SettingsPropsType) => {
-
-    const [maxValue, setMaxValue] = useState<string>('5');
-    const [startValue, setStartValue] = useState<string>('0');
+export const Settings = (
+    {handleStartValueChange,handleMaxValueChange,applySettings,disabled,maxLimit,startLimit}
+    : SettingsPropsType) => {
 
     const changeMaxValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        const newMaxValue = e.target.value;
-        setMaxValue(newMaxValue);
-        props.maxValueChange(newMaxValue)
-    }
+        handleMaxValueChange(Number(e.target.value));
+    };
 
     const changeStartValueHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        const newStartValue = e.target.value;
-        setStartValue(newStartValue);
-        props.startValueChange(newStartValue);
-    }
+        handleStartValueChange(Number(e.target.value));
+    };
 
-    const onClickHandler =( )=> {
-        props.maxValueChange(maxValue)
-        props.startValueChange(startValue)
-        localStorage.setItem('maxValue', maxValue);
-        localStorage.setItem('startValue', startValue);
-        props.setCounter()
-    }
+    const onClickHandler = () => {
+        applySettings(maxLimit, startLimit);
+    };
 
     return (
         <div>
             <span>max value: </span>
-            <input value={props.maxValue} type="number" onChange={changeMaxValueHandler}/>
+            <input
+                value={maxLimit}
+                type="number"
+                onChange={changeMaxValueHandler}
+            />
+
             <span>start value: </span>
-            <input value={props.startValue} type="number" onChange={changeStartValueHandler}/>
-            <button onClick={onClickHandler} disabled={props.disabled}>set</button>
+            <input
+                value={startLimit}
+                type="number"
+                onChange={changeStartValueHandler}
+            />
+
+            <Button onClick={onClickHandler} disabled={disabled} title={"Set"} />
         </div>
-    )
-}
+    );
+};

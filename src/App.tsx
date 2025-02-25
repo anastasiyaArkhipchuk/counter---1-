@@ -1,86 +1,91 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import {Counter} from "./components/Counter";
-import {Settings} from "./components/Settings";
+import { Counter } from "./components/Counter";
+import { Settings } from "./components/Settings";
+import {start} from "node:repl";
 
 function App() {
 
-    const [count, setCount] = useState<string>('0');
-    const [maxValue, setMaxValue] = useState<string>('5');
-    const [startValue, setStartValue] = useState<string>('0');
+    const [currentCount, setCurrentCount] = useState<number>(0);
+    const [maxLimit, setMaxLimit] = useState<number>(5);
+    const [startLimit, setStartLimit] = useState<number>(0);
     const [disabled, setDisabled] = useState<boolean>(true);
-
-
+    const [message, setMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        let newMax = localStorage.getItem("maxValue")
-        if (newMax){
-            setMaxValue(newMax)
+        const storedMaxValue = localStorage.getItem("maxValue");
+        if (storedMaxValue) {
+            setMaxLimit(JSON.parse(storedMaxValue));
         }
-        let newStart = localStorage.getItem("startValue")
-        if (newStart){
-            setStartValue(newStart)
+
+        const storedStartValue = localStorage.getItem("startValue");
+        if (storedStartValue) {
+            setStartLimit(JSON.parse(storedStartValue));
+            setCurrentCount(JSON.parse(storedStartValue));
         }
     }, []);
 
-
-
-
-    function increment() {
-        if (parseInt(count) < parseInt(maxValue)) {
-            let newCount = (parseInt(count) + 1).toString();
-            setCount(newCount);
+    const incrementCount = () => {
+        if (currentCount < maxLimit) {
+            setCurrentCount(prev => prev + 1);
         }
-    }
+    };
 
-    function reset() {
-        setCount(startValue);
-    }
+    const resetCount = () => {
+        setCurrentCount(startLimit);
+    };
 
-    function setCounter() {
-        setCount(startValue);
-        setDisabled(true)
+    const applySettings = (newMaxLimit: number, newStartLimit: number) => {
+        setCurrentCount(newStartLimit);
+        setMaxLimit(newMaxLimit);
+        setStartLimit(newStartLimit);
+        setDisabled(true);
+        setMessage(null);
+        localStorage.setItem('maxValue', JSON.stringify(newMaxLimit));
+        localStorage.setItem('startValue', JSON.stringify(newStartLimit));
+    };
 
-    }
-
-    function startValueChange(newStartValue: string) {
-        if (parseInt(newStartValue)<0) {
-            setCount("Incorrect Value");
-            setDisabled(true)
-        }else{
-            setCount("inter values and press \"set\"");
-            setDisabled(false)
+    const handleStartValueChange = (newStartLimit: number) => {
+        if (newStartLimit < 0 || newStartLimit >= maxLimit) {
+            setDisabled(true);
+            setMessage("Incorrect Value")
+        } else {
+            setDisabled(false);
+            setMessage("Enter values and press 'Set'")
         }
-        setStartValue(newStartValue);
-    }
+        setStartLimit(newStartLimit);
+    };
 
-    function maxValueChange(newMaxValue: string) {
-        if (parseInt(startValue) > parseInt(newMaxValue)) {
-            setCount("Incorrect Value");
-            setDisabled(true)
-        }else{
-            setCount("inter values and press \"set\"");
-            setDisabled(false)
+    const handleMaxValueChange = (newMaxLimit: number) => {
+        if (newMaxLimit <= startLimit) {
+            setMessage("Incorrect Value")
+            setDisabled(true);
+        } else {
+            setMessage("Enter values and press 'Set'")
+            setDisabled(false);
         }
-        setMaxValue(newMaxValue);
-    }
+        setMaxLimit(newMaxLimit);
+    };
+
 
     return (
         <div>
             <Settings
-                startValueChange={startValueChange}
-                maxValueChange={maxValueChange}
-                maxValue={maxValue}
-                startValue={startValue}
-                setCounter={setCounter}
+                handleStartValueChange={handleStartValueChange}
+                handleMaxValueChange={handleMaxValueChange}
+                maxLimit={maxLimit}
+                startLimit={startLimit}
+                applySettings={applySettings}
                 disabled={disabled}
             />
 
-            <Counter count={count}
-                     increment={increment}
-                     reset={reset}
-                     disabled={disabled}
-                     maxValue={maxValue}
+            <Counter
+                currentCount={currentCount}
+                incrementCount={incrementCount}
+                resetCount={resetCount}
+                disabled={disabled}
+                maxLimit={maxLimit}
+                message={message}
             />
         </div>
     );

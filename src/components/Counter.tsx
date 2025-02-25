@@ -1,19 +1,27 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {Button} from "./Button";
 
 type CounterProps = {
-    count: string;
-    increment: () => void;
-    reset: () => void;
+    currentCount: number;
+    incrementCount: () => void;
+    resetCount: () => void;
     disabled: boolean;
-    maxValue: string
+    maxLimit: number;
+    message: string| null;
 }
 
-export const Counter = (props: CounterProps) => {
+export const Counter = ({currentCount,incrementCount,resetCount,disabled,maxLimit, message }: CounterProps) => {
+
     return (
+
         <div>
-            <div> {props.count} </div>
-            <button onClick={props.increment} disabled={!props.disabled || props.maxValue === props.count}>inc</button>
-            <button onClick={props.reset} disabled={!props.disabled}>reset</button>
+            <div>
+                <div>
+                    {message || currentCount}
+                </div>
+            </div>
+            <Button onClick={incrementCount} disabled={!disabled || maxLimit === currentCount} title={"inc"}/>
+            <Button onClick={resetCount} disabled={!disabled} title={"reset"}/>
         </div>
     )
 }
